@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#121b19">
+  <meta name="description" content="Quiz com 150 questões sobre os músculos da cabeça e do pescoço, baseado no material de estudo fornecido.">
+  <title>Músculos em estudo — Quiz de cabeça e pescoço</title>
+  <link rel="icon" href="data:,">
+  <link rel="preload" href="/assets/fonts/NotoSerif-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="/src/styles.css">
+  <script type="module" src="/src/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Pular para o conteúdo</a>
+  <div class="page-shell">
+    <header class="site-header"><a class="wordmark" href="/" aria-label="Músculos em estudo, recarregar sessão">Músculos em estudo</a><span>Cabeça e pescoço</span></header>
+    <p id="storage-warning" class="storage-warning" role="status" hidden></p>
+    <div id="app" class="app-layout"></div>
+    <footer class="site-footer"><span>Baseado exclusivamente no material de estudo.</span><a id="pdf-link" target="_blank" rel="noopener">Consultar PDF<span class="sr-only"> (abre em outra aba)</span></a></footer>
+  </div>
+  <div id="announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  <dialog id="reset-dialog" aria-labelledby="reset-title" aria-describedby="reset-description"><form method="dialog"><h2 id="reset-title">Começar uma nova sessão?</h2><p id="reset-description">As respostas e o resultado desta sessão serão apagados deste navegador. O quiz voltará à primeira questão.</p><div class="actions"><button class="secondary" value="cancel" autofocus>Manter meu progresso</button><button class="primary" value="restart">Apagar e recomeçar</button></div></form></dialog>
+  <noscript>Ative o JavaScript no navegador para iniciar o quiz e salvar seu progresso.</noscript>
+</body>
+</html>

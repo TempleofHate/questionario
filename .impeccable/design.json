@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-14T19:02:50.352683+00:00",
+  "title": "Design System: Músculos em estudo",
+  "extensions": {
+    "shadows": [],
+    "motion": [
+      {
+        "name": "feedback-enter",
+        "value": "220ms cubic-bezier(.16,1,.3,1)",
+        "purpose": "Revelação discreta; desativada com movimento reduzido."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact-desktop",
+        "value": "1050px"
+      },
+      {
+        "name": "mobile",
+        "value": "760px"
+      },
+      {
+        "name": "wide",
+        "value": "1600px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botão primário",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Confirmação e avanço explícito.",
+      "html": "<button class=\"ds-primary\">Próxima questão</button>",
+      "css": ".ds-primary{font:600 16px/1.65 var(--sans,sans-serif);padding:12px 22px;min-height:48px;border:0;border-radius:4px;background:var(--accent,#c5df9a);color:var(--bg,#121b19);cursor:pointer}.ds-primary:hover{background:#d6edb4}.ds-primary:focus-visible{outline:3px solid var(--accent,#c5df9a);outline-offset:5px}"
+    },
+    {
+      "name": "Botão secundário",
+      "kind": "button",
+      "description": "Ações alternativas.",
+      "html": "<button class=\"ds-secondary\">Voltar ao resultado</button>",
+      "css": ".ds-secondary{font:16px/1.65 var(--sans,sans-serif);padding:12px 22px;min-height:48px;border:1px solid var(--border,#53645d);border-radius:4px;background:transparent;color:var(--text,#eff0e7);cursor:pointer}.ds-secondary:hover{background:var(--surface,#1b2722)}.ds-secondary:focus-visible{outline:3px solid var(--accent,#c5df9a);outline-offset:5px}"
+    },
+    {
+      "name": "Alternativa",
+      "kind": "input",
+      "description": "Uma escolha por questão.",
+      "html": "<label class=\"ds-option\"><input type=\"radio\" name=\"preview-option\"> Occipitofrontal</label>",
+      "css": ".ds-option{display:flex;gap:18px;align-items:center;padding:16px 20px;min-height:68px;border:1px solid var(--border,#53645d);border-radius:4px;color:var(--text,#eff0e7);font:16px/1.55 var(--sans,sans-serif)}.ds-option:hover{background:var(--surface,#1b2722)}.ds-option:focus-within{outline:2px solid var(--accent,#c5df9a);outline-offset:3px}.ds-option input{accent-color:var(--accent,#c5df9a);width:20px;height:20px}"
+    },
+    {
+      "name": "Justificativa",
+      "kind": "custom",
+      "refersTo": "justification",
+      "description": "Explicação sempre aberta após resolução. Exemplo do próprio banco.",
+      "html": "<section class=\"ds-justification\"><h3>Justificativa:</h3><p>O occipitofrontal eleva a pele da fronte e produz rugas horizontais.</p></section>",
+      "css": ".ds-justification{color:var(--text,#eff0e7);max-width:72ch;margin-top:24px;font:16px/1.7 var(--sans,sans-serif)}.ds-justification h3{font-size:16px;font-weight:600;margin:0 0 8px}.ds-justification p{margin:0}"
+    },
+    {
+      "name": "Índice de assuntos",
+      "kind": "nav",
+      "description": "Indicação de etapa; não funciona como atalho para pular questões.",
+      "html": "<ol class=\"ds-topics\"><li aria-current=\"step\">Face <span>0/50</span></li><li>Mastigação <span>0/30</span></li></ol>",
+      "css": ".ds-topics{list-style:none;padding:0;font:16px/1.5 var(--sans,sans-serif);color:var(--muted,#acbab4)}.ds-topics li{display:flex;justify-content:space-between;gap:12px;padding:12px 0}.ds-topics [aria-current]{color:var(--text,#eff0e7);text-decoration:underline;text-decoration-color:var(--accent,#c5df9a);text-underline-offset:9px}.ds-topics span{font-size:12px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Sessão de estudo editorial",
+    "overview": "Sistema extraído da aplicação existente e da referência aprovada pelo usuário. A leitura da pergunta e da justificativa orienta a composição. O fundo noturno uniforme, a hierarquia serifada e os controles simples mantêm a atmosfera acadêmica solicitada.",
+    "keyCharacteristics": [
+      "Perguntas serifadas, corpo sem serifa e fontes locais.",
+      "Superfícies planas, divisórias finas e espaço consistente.",
+      "Feedback textual, com gabarito e justificativa identificados."
+    ],
+    "rules": [
+      {
+        "name": "Text First",
+        "body": "Acerto, erro e tempo esgotado sempre aparecem escritos. A cor complementa o significado.",
+        "section": "colors"
+      },
+      {
+        "name": "Explanation",
+        "body": "Justificativa é conteúdo principal: não usar tamanho de legenda, truncamento, acordeão fechado nem desaparecimento automático.",
+        "section": "typography"
+      }
+    ],
+    "dos": [
+      "Preservar o tema, as fontes locais e a hierarquia existente.",
+      "Manter justificativas legíveis em acerto, erro, expiração e revisão.",
+      "Conservar foco de teclado e referências ao material de estudo."
+    ],
+    "donts": [
+      "Avançar automaticamente depois de revelar uma resposta.",
+      "Reduzir a justificativa a uma mensagem genérica ou somente ao gabarito.",
+      "Introduzir imagens anatômicas, fatos externos, gradientes ou ornamentos sem relação com o estudo."
+    ]
+  }
+}
