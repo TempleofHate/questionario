@@ -1151,3 +1151,35 @@ dialog .actions {
     display:none;
   }
 }
+
+/* New visual mode shares the existing palette, typography and feedback. */
+.mode-nav { display:flex; flex-wrap:wrap; gap:8px 24px; margin:0 0 32px; padding-bottom:16px; border-bottom:1px solid var(--soft-border); }
+.mode-nav button { min-height:44px; }
+.mode-nav [aria-current] { color:var(--accent); text-decoration-thickness:2px; text-underline-offset:7px; }
+.visual-question { margin:24px 0; min-width:0; }
+.visual-tools { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:12px; }
+.visual-tools p { margin:0; color:var(--muted); font-size:14px; }
+.visual-tools button { flex-shrink:0; }
+.image-scroll { overflow:auto; max-height:70vh; border:1px solid var(--border); background:#171717; overscroll-behavior:contain; }
+.image-plane { position:relative; width:min(100%, 800px, calc(68vh * var(--image-ratio))); max-width:800px; margin-inline:auto; line-height:0; }
+.image-plane.expanded { width:1200px; min-width:1200px; max-width:none; }
+.image-plane img { display:block; width:100%; height:auto; }
+.hotspot-layer { position:absolute; inset:0; width:100%; height:100%; }
+[data-hotspot] { cursor:crosshair; touch-action:pan-x pan-y pinch-zoom; }
+[data-hotspot]:focus-visible { outline:3px solid var(--accent); outline-offset:-3px; }
+.correct-region { fill:rgb(130 230 150 / 24%); stroke:#83f3a1; stroke-width:2.5px; vector-effect:non-scaling-stroke; }
+.answer-mark { stroke:#fff; stroke-width:3px; vector-effect:non-scaling-stroke; fill:none; filter:drop-shadow(0 0 2px #000); }
+.keyboard-cursor { display:none; stroke:#fff; stroke-width:2px; vector-effect:non-scaling-stroke; filter:drop-shadow(0 0 2px #000); }
+[data-hotspot]:focus-visible .keyboard-cursor { display:block; }
+.visual-question figcaption { margin-top:10px; color:var(--muted); font-size:12px; line-height:1.7; }
+.review-item .image-scroll { max-height:none; }
+.review-item .image-plane { max-width:620px; }
+@media(max-width:760px) {
+  .mode-nav { margin-bottom:24px; gap:8px 16px; }
+  .visual-tools { flex-wrap:wrap; }
+  .image-scroll { max-height:65vh; }
+  .skull-mode .mode-nav { margin-bottom:16px; padding-bottom:8px; }
+  .skull-mode .question h1 { font-size:clamp(24px, 6vw, 32px); margin-block:20px; }
+  .skull-mode .visual-question { margin-top:16px; }
+  .image-plane { width:min(100%, calc(63vh * var(--image-ratio))); }
+}

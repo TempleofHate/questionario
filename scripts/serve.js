@@ -2,7 +2,7 @@ import http from 'node:http';
 import path from 'node:path';
 import { readFile } from 'node:fs/promises';
 const root = path.resolve(process.argv[2] || '.');
-const mime = { '.html':'text/html; charset=utf-8', '.css':'text/css; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.pdf':'application/pdf', '.txt':'text/plain; charset=utf-8', '.woff2':'font/woff2', '.ttf':'font/ttf', '.otf':'font/otf', '.png':'image/png', '.svg':'image/svg+xml' };
+const mime = { '.html':'text/html; charset=utf-8', '.css':'text/css; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.pdf':'application/pdf', '.txt':'text/plain; charset=utf-8', '.woff2':'font/woff2', '.ttf':'font/ttf', '.otf':'font/otf', '.webp':'image/webp', '.json':'application/json', '.png':'image/png', '.svg':'image/svg+xml' };
 http.createServer(async (req, res) => {
   try {
     const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);

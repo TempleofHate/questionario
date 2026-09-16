@@ -1,6 +1,7 @@
-import { PDF_URL, questions } from './data/questions.js';
-import { createSession, STORAGE_KEY, readSession, writeSession, selectAnswer, confirmAnswer, nextQuestion, expireQuestion, remainingSeconds } from './engine.js';
+import { PDF_URL } from './data/questions.js';
+import { createSession, STORAGE_KEY, SKULL_STORAGE_KEY, questionsFor, answerPoint, readSession, writeSession, selectAnswer, confirmAnswer, nextQuestion, expireQuestion, remainingSeconds } from './engine.js';
 import { intro, sidebar, quiz, results, review } from './views.js';
+import { modeNav } from './visual.js';
 import { clock } from './format.js';
 
 const app = document.querySelector('#app');
@@ -9,7 +10,9 @@ const announcer = document.querySelector('#announcer');
 const dialog = document.querySelector('#reset-dialog');
 let storage;
 try { storage = window.localStorage; } catch { storage = null; }
-const restored = readSession(storage);
+let mode = location.hash === '#cranio' ? 'skull' : 'muscles';
+const storageKey = () => mode === 'skull' ? SKULL_STORAGE_KEY : STORAGE_KEY;
+const restored = readSession(storage, storageKey());
 let session = restored.session;
 let reviewFilter = 'all';
 let lastAnnounced = '';
@@ -19,13 +22,14 @@ document.querySelector('#pdf-link').href = PDF_URL;
 
 function showWarning(message) { warning.textContent = message; warning.hidden = false; }
 function persist() {
-  if (!writeSession(storage, session)) showWarning('O navegador não permitiu salvar o progresso. O quiz funciona nesta aba, mas as respostas podem se perder ao fechar ou atualizar.');
+  if (!writeSession(storage, session, storageKey())) showWarning('O navegador não permitiu salvar o progresso. O quiz funciona nesta aba, mas as respostas podem se perder ao fechar ou atualizar.');
 }
 function announce(message) { announcer.textContent = message; }
 function render(focus = true) {
-  const content = !session ? intro() : session.screen === 'quiz' ? quiz(session) : session.screen === 'results' ? results(session) : review(session, reviewFilter);
-  app.innerHTML = `${sidebar(session)}<main id="main">${content}</main>`;
-  document.title = session?.screen === 'quiz' ? `Questão ${session.index + 1} de 150 — Músculos em estudo` : 'Músculos em estudo — Quiz de cabeça e pescoço';
+  const content = !session ? intro(mode) : session.screen === 'quiz' ? quiz(session) : session.screen === 'results' ? results(session) : review(session, reviewFilter);
+  app.innerHTML = `${sidebar(session, mode)}<main id="main" class="${mode === 'skull' ? 'skull-mode' : ''}">${modeNav(mode)}${content}</main>`;
+  document.title = session?.screen === 'quiz' ? `Questão ${session.index + 1} de ${questionsFor(session).length} — Músculos em estudo` : 'Músculos em estudo — Quiz de cabeça e pescoço';
+  document.querySelector('.site-footer > span').textContent = mode === 'skull' ? 'Fotografias anatômicas reais · Wikimedia Commons · CC BY-SA 4.0' : 'Baseado exclusivamente no material de estudo.';
   updateClock();
   if (focus) {
     document.querySelector('#screen-title').focus({ preventScroll: true });
@@ -39,7 +43,7 @@ function transition(next) {
   if (session.screen === 'quiz' && session.answers[session.index] && !wasAnswered) {
     // Leva o leitor ao feedback, inclusive em questões longas no celular.
     document.querySelector('#feedback-title')?.focus({ preventScroll: true });
-    document.querySelector('.feedback')?.scrollIntoView({ block: 'start', behavior: 'instant' });
+    document.querySelector(session.mode === 'skull' ? '.visual-question' : '.feedback')?.scrollIntoView({ block: 'start', behavior: 'instant' });
   }
 }
 function tick() {
@@ -48,7 +52,7 @@ function tick() {
   if (next !== session) {
     const index = session.index;
     transition(next);
-    announce(`Tempo esgotado na questão ${index + 1}. Resposta correta: ${questions[index].options[questions[index].answerIndex]}. Leia a justificativa e avance quando estiver pronto.`);
+    announce(`Tempo esgotado na questão ${index + 1}. Resposta correta: ${questionsFor(session)[index].options[questionsFor(session)[index].answerIndex]}. Leia a justificativa e avance quando estiver pronto.`);
   } else updateClock();
 }
 function updateClock() {
@@ -83,10 +87,26 @@ app.addEventListener('submit', event => {
   transition(confirmAnswer(session));
 });
 app.addEventListener('click', event => {
+  const surface = event.target.closest('[data-hotspot]');
+  if (surface && session) {
+    const image = surface.previousElementSibling;
+    if (!image.complete || !image.naturalWidth) return;
+    const rect = surface.getBoundingClientRect();
+    transition(answerPoint(session, { x: (event.clientX - rect.left) / rect.width * 100, y: (event.clientY - rect.top) / rect.height * 100 }));
+    return;
+  }
   const button = event.target.closest('[data-action]');
   if (!button) return;
   switch (button.dataset.action) {
-    case 'start': transition(createSession()); break;
+    case 'start': transition(createSession(Date.now(), mode)); break;
+    case 'mode': switchMode(button.dataset.mode); break;
+    case 'zoom': {
+      const expanded = button.getAttribute('aria-pressed') !== 'true';
+      button.setAttribute('aria-pressed', String(expanded));
+      button.textContent = expanded ? 'Ajustar à tela' : 'Ampliar imagem';
+      button.closest('figure').querySelector('.image-plane').classList.toggle('expanded', expanded);
+      break;
+    }
     case 'next': transition(nextQuestion(session)); break;
     case 'dismiss': transition({ ...session, notice: null }); break;
     case 'review': reviewFilter = 'all'; transition({ ...session, screen: 'review', notice: null }); break;
@@ -97,7 +117,7 @@ app.addEventListener('click', event => {
 dialog.addEventListener('close', () => {
   if (dialog.returnValue === 'restart') {
     session = null; persist();
-    transition(createSession());
+    transition(createSession(Date.now(), mode));
     announce('Progresso anterior apagado. Nova sessão iniciada.');
   } else {
     resumeFocus?.focus();
@@ -105,13 +125,42 @@ dialog.addEventListener('close', () => {
   }
 });
 window.addEventListener('storage', event => {
-  if (event.key !== STORAGE_KEY) return;
-  const latest = readSession(storage);
+  if (event.key !== storageKey()) return;
+  const latest = readSession(storage, storageKey());
   if (latest.warning) { showWarning(latest.warning); return; }
   session = latest.session;
   if (dialog.open) dialog.close('cancel');
   render(); tick();
   announce('Progresso atualizado a partir de outra aba.');
+});
+function switchMode(nextMode) {
+  if (!['skull', 'muscles'].includes(nextMode) || nextMode === mode) return;
+  persist();
+  mode = nextMode;
+  history.replaceState(null, '', mode === 'skull' ? '#cranio' : location.pathname + location.search);
+  const restoredMode = readSession(storage, storageKey());
+  session = restoredMode.session;
+  if (restoredMode.warning) showWarning(restoredMode.warning);
+  lastAnnounced = ''; render(); tick();
+}
+window.addEventListener('hashchange', () => switchMode(location.hash === '#cranio' ? 'skull' : 'muscles'));
+app.addEventListener('keydown', event => {
+  const surface = event.target.closest('[data-hotspot]');
+  if (!surface) return;
+  const point = { x: Number(surface.dataset.x || 50), y: Number(surface.dataset.y || 50) };
+  const delta = event.shiftKey ? 0.25 : 2;
+  const offsets = { ArrowLeft: [-delta, 0], ArrowRight: [delta, 0], ArrowUp: [0, -delta], ArrowDown: [0, delta] };
+  if (offsets[event.key]) {
+    event.preventDefault();
+    point.x = Math.max(0, Math.min(100, point.x + offsets[event.key][0]));
+    point.y = Math.max(0, Math.min(100, point.y + offsets[event.key][1]));
+    surface.dataset.x = point.x; surface.dataset.y = point.y;
+    surface.querySelector('.keyboard-cursor').setAttribute('d', `M${point.x - 2},${point.y} h4 M${point.x},${point.y - 2} v4`);
+  } else if (['Enter', ' '].includes(event.key)) {
+    event.preventDefault();
+    const image = surface.previousElementSibling;
+    if (image.complete && image.naturalWidth) transition(answerPoint(session, point));
+  }
 });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
 window.addEventListener('pageshow', tick);
