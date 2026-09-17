@@ -1,5 +1,5 @@
 import { PDF_URL } from './data/questions.js';
-import { createSession, STORAGE_KEY, SKULL_STORAGE_KEY, questionsFor, answerPoint, readSession, writeSession, selectAnswer, confirmAnswer, nextQuestion, expireQuestion, remainingSeconds } from './engine.js';
+import { createSession, isVisual, MUSCLE_VISUAL_STORAGE_KEY, STORAGE_KEY, SKULL_STORAGE_KEY, questionsFor, answerPoint, readSession, writeSession, selectAnswer, confirmAnswer, nextQuestion, expireQuestion, remainingSeconds } from './engine.js';
 import { intro, sidebar, quiz, results, review } from './views.js';
 import { modeNav } from './visual.js';
 import { clock } from './format.js';
@@ -10,8 +10,8 @@ const announcer = document.querySelector('#announcer');
 const dialog = document.querySelector('#reset-dialog');
 let storage;
 try { storage = window.localStorage; } catch { storage = null; }
-let mode = location.hash === '#cranio' ? 'skull' : 'muscles';
-const storageKey = () => mode === 'skull' ? SKULL_STORAGE_KEY : STORAGE_KEY;
+let mode = location.hash === '#musculos-visuais' ? 'muscle-visual' : location.hash === '#cranio' ? 'skull' : 'muscles';
+const storageKey = () => mode === 'muscle-visual' ? MUSCLE_VISUAL_STORAGE_KEY : mode === 'skull' ? SKULL_STORAGE_KEY : STORAGE_KEY;
 const restored = readSession(storage, storageKey());
 let session = restored.session;
 let reviewFilter = 'all';
@@ -27,9 +27,9 @@ function persist() {
 function announce(message) { announcer.textContent = message; }
 function render(focus = true) {
   const content = !session ? intro(mode) : session.screen === 'quiz' ? quiz(session) : session.screen === 'results' ? results(session) : review(session, reviewFilter);
-  app.innerHTML = `${sidebar(session, mode)}<main id="main" class="${mode === 'skull' ? 'skull-mode' : ''}">${modeNav(mode)}${content}</main>`;
+  app.innerHTML = `${sidebar(session, mode)}<main id="main" class="${isVisual({ mode }) ? 'skull-mode' : ''}">${modeNav(mode)}${content}</main>`;
   document.title = session?.screen === 'quiz' ? `Questão ${session.index + 1} de ${questionsFor(session).length} — Músculos em estudo` : 'Músculos em estudo — Quiz de cabeça e pescoço';
-  document.querySelector('.site-footer > span').textContent = mode === 'skull' ? 'Fotografias anatômicas reais · Wikimedia Commons · CC BY-SA 4.0' : 'Baseado exclusivamente no material de estudo.';
+  document.querySelector('.site-footer > span').textContent = mode === 'muscle-visual' ? 'Ilustrações anatômicas · AnatomyTOOL · Créditos em cada imagem' : mode === 'skull' ? 'Fotografias anatômicas reais · Wikimedia Commons · CC BY-SA 4.0' : 'Baseado exclusivamente no material de estudo.';
   updateClock();
   if (focus) {
     document.querySelector('#screen-title').focus({ preventScroll: true });
@@ -43,7 +43,7 @@ function transition(next) {
   if (session.screen === 'quiz' && session.answers[session.index] && !wasAnswered) {
     // Leva o leitor ao feedback, inclusive em questões longas no celular.
     document.querySelector('#feedback-title')?.focus({ preventScroll: true });
-    document.querySelector(session.mode === 'skull' ? '.visual-question' : '.feedback')?.scrollIntoView({ block: 'start', behavior: 'instant' });
+    document.querySelector(isVisual(session) ? '.visual-question' : '.feedback')?.scrollIntoView({ block: 'start', behavior: 'instant' });
   }
 }
 function tick() {
@@ -134,16 +134,16 @@ window.addEventListener('storage', event => {
   announce('Progresso atualizado a partir de outra aba.');
 });
 function switchMode(nextMode) {
-  if (!['skull', 'muscles'].includes(nextMode) || nextMode === mode) return;
+  if (!['skull', 'muscles', 'muscle-visual'].includes(nextMode) || nextMode === mode) return;
   persist();
   mode = nextMode;
-  history.replaceState(null, '', mode === 'skull' ? '#cranio' : location.pathname + location.search);
+  history.replaceState(null, '', mode === 'muscle-visual' ? '#musculos-visuais' : mode === 'skull' ? '#cranio' : location.pathname + location.search);
   const restoredMode = readSession(storage, storageKey());
   session = restoredMode.session;
   if (restoredMode.warning) showWarning(restoredMode.warning);
   lastAnnounced = ''; render(); tick();
 }
-window.addEventListener('hashchange', () => switchMode(location.hash === '#cranio' ? 'skull' : 'muscles'));
+window.addEventListener('hashchange', () => switchMode(location.hash === '#musculos-visuais' ? 'muscle-visual' : location.hash === '#cranio' ? 'skull' : 'muscles'));
 app.addEventListener('keydown', event => {
   const surface = event.target.closest('[data-hotspot]');
   if (!surface) return;

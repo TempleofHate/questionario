@@ -12,8 +12,8 @@
     "validate": "node scripts/validate-questions.js",
     "lint": "node scripts/check.js",
     "test": "node --test tests/*.test.js",
-    "test:e2e": "node tests/browser.js && node tests/skull-browser.js",
-    "test:visual": "node tests/skull-browser.js",
+    "test:e2e": "node tests/browser.js && node tests/skull-browser.js && node tests/muscle-visual-browser.js",
+    "test:visual": "node tests/skull-browser.js && node tests/muscle-visual-browser.js",
     "build": "node scripts/build.js",
     "preview": "node scripts/serve.js dist"
   },

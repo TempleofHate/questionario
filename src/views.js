@@ -1,22 +1,23 @@
 import { groups, PDF_URL } from './data/questions.js';
-import { summary, remainingSeconds, questionsFor } from './engine.js';
+import { summary, isVisual, remainingSeconds, questionsFor } from './engine.js';
 import { escapeHtml as e, decimal, duration, clock } from './format.js';
-import { visualImage, visualIntro } from './visual.js';
+import { visualImage, visualIntro, muscleVisualIntro } from './visual.js';
 const letters = ['A', 'B', 'C', 'D'];
 const arrow = '<svg class="action-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-const source = q => q.type === 'hotspot' ? `<a href="${e(q.source.url)}" target="_blank" rel="noopener">Fotografia original no Wikimedia Commons</a> · <a href="/docs/skull-sources.html">Fontes e créditos</a>` : `<a href="${e(PDF_URL)}#page=${q.source.page}" target="_blank" rel="noopener">Conferir no PDF · p. ${q.source.page}<span class="sr-only"> (abre em outra aba)</span></a>`;
+const source = q => q.type === 'hotspot' ? `<a href="${e(q.source.url)}" target="_blank" rel="noopener">Imagem original no ${e(q.image.provider || 'Wikimedia Commons')}</a> · <a href="${q.credits || "/docs/skull-sources.html"}">Fontes e créditos</a>` : `<a href="${e(PDF_URL)}#page=${q.source.page}" target="_blank" rel="noopener">Conferir no PDF · p. ${q.source.page}<span class="sr-only"> (abre em outra aba)</span></a>`;
 export function sidebar(session, mode = 'muscles') {
   const bank = questionsFor(session || { mode });
-  const topics = mode === 'skull' ? [['Anatomia visual do crânio', bank]] : groups;
+  const topics = mode === 'muscle-visual' ? [['Anatomia visual muscular', bank]] : mode === 'skull' ? [['Anatomia visual do crânio', bank]] : groups;
   const stats = session ? summary(session) : null;
   return `<aside class="sidebar" aria-label="Assuntos do quiz"><h2>${session ? 'Sua sessão' : 'Roteiro de estudo'}</h2>
     <ol class="topic-list">${topics.map(([topic, rows]) => {
       const active = session?.screen === 'quiz' && bank[session.index].topic === topic;
       const completed = stats?.byTopic[topic].answered || 0;
       return `<li class="${active ? 'active' : ''}" ${active ? 'aria-current="step"' : ''}><span>${e(topic)}</span><span class="topic-count">${session ? `${completed}/` : ''}${rows.length}</span></li>`;
-    }).join('')}</ol><div class="session-notes"><p>${bank.length} questões<br>1 minuto por questão</p>${session ? `<p>${stats.correct} ${stats.correct === 1 ? 'acerto' : 'acertos'} até aqui</p><button class="text-button" data-action="reset">Apagar progresso e recomeçar</button>` : mode === 'skull' ? '<p>Fotografias de peças reais.<br>Resposta por toque na imagem.</p>' : '<p>Base única: o PDF<br>de cabeça e pescoço.</p>'}</div></aside>`;
+    }).join('')}</ol><div class="session-notes"><p>${bank.length} questões<br>1 minuto por questão</p>${session ? `<p>${stats.correct} ${stats.correct === 1 ? 'acerto' : 'acertos'} até aqui</p><button class="text-button" data-action="reset">Apagar progresso e recomeçar</button>` : isVisual({ mode }) ? '<p>Imagens anatômicas.<br>Resposta por toque na imagem.</p>' : '<p>Base única: o PDF<br>de cabeça e pescoço.</p>'}</div></aside>`;
 }
 export function intro(mode = 'muscles') {
+  if (mode === 'muscle-visual') return muscleVisualIntro();
   if (mode === 'skull') return visualIntro();
   return `<section class="intro"><h1 id="screen-title" tabindex="-1">Conheça os músculos.<br>Entenda as relações.</h1>
     <p class="lead">Uma sessão de estudo sobre os músculos da cabeça e do pescoço, do primeiro conceito às relações entre origem, inserção, ação e inervação.</p>
