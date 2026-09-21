@@ -96,9 +96,9 @@ try {
     assert.equal(await page.locator('.review-item').count(),23);
     await page.locator('#review-filter').selectOption('wrong');
     assert.equal(await page.locator('.review-item').count(),46);
-    await page.getByRole('button',{name:'Músculos · 150 questões',exact:true}).click();
+    await page.getByRole('button',{name:'Músculos · 190 questões',exact:true}).click();
     assert.equal(await page.evaluate(k=>localStorage.getItem(k),STORAGE_KEY),legacy,'legacy session unchanged');
-    assert.equal(await page.locator('progress').getAttribute('max'),'150');
+    assert.equal(await page.locator('progress').getAttribute('max'),'190');
     await page.getByRole('button',{name:'Crânio visual · 70 questões',exact:true}).click();
     assert.equal((await saved()).answers.length,70);
     await context.close();

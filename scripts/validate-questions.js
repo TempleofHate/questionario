@@ -18,10 +18,10 @@ export function validateExplanation(explanation, pageText, id = 'questão') {
 }
 export async function validateQuestions() {
   const pages = (await readFile(new URL('../docs/musculos.txt', import.meta.url), 'utf8')).split('\f');
-  assert.equal(questions.length, 150, 'O banco deve ter exatamente 150 questões');
-  assert.equal(new Set(questions.map(q => q.id)).size, 150, 'IDs duplicados');
-  assert.equal(new Set(questions.map(q => normalize(q.prompt))).size, 150, 'Enunciados duplicados');
-  assert.equal(new Set(questions.map(q => normalize(q.explanation))).size, 150, 'Justificativas repetidas');
+  assert.equal(questions.length, 190, 'O banco deve ter exatamente 190 questões');
+  assert.equal(new Set(questions.map(q => q.id)).size, 190, 'IDs duplicados');
+  assert.equal(new Set(questions.map(q => normalize(q.prompt))).size, 190, 'Enunciados duplicados');
+  assert.equal(new Set(questions.map(q => normalize(q.explanation))).size, 190, 'Justificativas repetidas');
   for (const q of questions) {
     const label = `${q.id}: ${q.prompt}`;
     assert.ok(q.prompt.trim() && q.explanation.trim().length > 25, `${label}: explicação ausente`);
@@ -44,7 +44,7 @@ export async function validateQuestions() {
     topics: Object.fromEntries(groups.map(([t, rows]) => [t, rows.length])),
     difficulty: Object.fromEntries(['Fácil', 'Média', 'Difícil'].map(d => [d, questions.filter(q => q.difficulty === d).length])),
     answerPositions: [0, 1, 2, 3].map(i => questions.filter(q => q.answerIndex === i).length),
-    source: '150 referências de página e evidências presentes no texto extraído. Fidelidade semântica conferida editorialmente; a checagem textual não substitui essa revisão.',
+    source: '190 referências de página e evidências presentes no texto extraído. Fidelidade semântica conferida editorialmente; a checagem textual não substitui essa revisão.',
   };
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

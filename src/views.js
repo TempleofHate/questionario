@@ -21,7 +21,7 @@ export function intro(mode = 'muscles') {
   if (mode === 'skull') return visualIntro();
   return `<section class="intro"><h1 id="screen-title" tabindex="-1">Conheça os músculos.<br>Entenda as relações.</h1>
     <p class="lead">Uma sessão de estudo sobre os músculos da cabeça e do pescoço, do primeiro conceito às relações entre origem, inserção, ação e inervação.</p>
-    <dl class="intro-facts"><div><dt>Questões</dt><dd>150</dd></div><div><dt>Por questão</dt><dd>60 segundos</dd></div><div><dt>Fonte</dt><dd>7 páginas de estudo</dd></div></dl>
+    <dl class="intro-facts"><div><dt>Questões</dt><dd>190</dd></div><div><dt>Por questão</dt><dd>60 segundos</dd></div><div><dt>Fonte</dt><dd>7 páginas de estudo</dd></div></dl>
     <h2>Como funciona</h2><ol class="instructions"><li>Escolha uma das quatro alternativas e confirme.</li><li>Leia a justificativa e avance no seu ritmo.</li><li>Se o minuto terminar, a questão fica como não respondida e conta como erro. Leia o gabarito e a justificativa antes de avançar.</li></ol>
     <p class="muted">Seu progresso é salvo neste navegador. O cronômetro da questão em andamento continua se você sair ou atualizar a página.</p>
     <div class="actions"><button class="primary" data-action="start">Iniciar quiz ${arrow}</button><a href="${e(PDF_URL)}" target="_blank" rel="noopener">Ler material de estudo<span class="sr-only"> (abre em outra aba)</span></a></div>

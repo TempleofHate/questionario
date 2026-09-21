@@ -1,3 +1,4 @@
+import { additional } from './additional.js';
 import { face } from './face.js';
 import { mastigacao } from './mastigacao.js';
 import { lingua } from './lingua.js';
@@ -7,12 +8,16 @@ import { relacoes } from './relacoes.js';
 
 export const BANK_VERSION = 'musculos-v1';
 export const PDF_URL = '/docs/Músculos Cabeça e Pescoço (2)-1.pdf';
-export const groups = [
+const originalGroups = [
   ['Face', face], ['Mastigação', mastigacao], ['Língua e palato', lingua],
   ['Hióide e deglutição', hioide], ['Pescoço', pescoco], ['Relações anatômicas', relacoes],
 ];
+export const groups = originalGroups.map(([topic, rows]) => [
+  topic, [...rows, ...additional.filter(([name]) => name === topic).map(([, row]) => row)],
+]);
 // Gabaritos distribuídos de forma determinística; nenhuma aleatoriedade ao restaurar.
-export const questions = groups.flatMap(([topic, rows]) => rows.map(row => ({ topic, row })))
+export const questions = originalGroups.flatMap(([topic, rows]) => rows.map(row => ({ topic, row })))
+  .concat(additional.map(([topic, row]) => ({ topic, row })))
   .map(({ topic, row }, index) => {
     const [page, difficulty, evidence, prompt, editorialOptions, explanation] = row;
     const answerIndex = (index * 7 + Math.floor(index / 4)) % 4;

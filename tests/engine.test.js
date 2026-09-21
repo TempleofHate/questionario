@@ -7,10 +7,10 @@ import { quiz, review } from '../src/views.js';
 import { escapeHtml } from '../src/format.js';
 const now = 1_800_000_000_000;
 
-test('banco: 150 questões únicas, 4 alternativas, gabaritos e evidências no PDF', async () => {
+test('banco: 190 questões únicas, 4 alternativas, gabaritos e evidências no PDF', async () => {
   const report = await validateQuestions();
-  assert.equal(report.total, 150);
-  assert.equal(report.withExplanation, 150);
+  assert.equal(report.total, 190);
+  assert.equal(report.withExplanation, 190);
   assert.equal(report.genericExplanations, 0);
 });
 test('uma seleção por vez, confirmação e bloqueio contra alteração ou confirmação dupla', () => {
@@ -82,21 +82,21 @@ test('percurso completo calcula nota, erros, esgotamento, tempo e desempenho por
     assert.equal(validSession(s), true);
   });
   const stats = summary(s);
-  assert.equal(s.screen, 'results'); assert.equal(s.answers.length, 150);
-  assert.equal(stats.correct, 50); assert.equal(stats.errors, 100); assert.equal(stats.timedOut, 50);
-  assert.equal(stats.totalMs, 50 * LIMIT_MS + 100 * 1_000);
-  assert.equal(stats.grade, 50 / 150 * 10);
-  assert.equal(Object.values(stats.byTopic).reduce((sum, t) => sum + t.correct, 0), 50);
+  assert.equal(s.screen, 'results'); assert.equal(s.answers.length, 190);
+  assert.equal(stats.correct, 63); assert.equal(stats.errors, 127); assert.equal(stats.timedOut, 64);
+  assert.equal(stats.totalMs, 64 * LIMIT_MS + 126 * 1_000);
+  assert.equal(stats.grade, 63 / 190 * 10);
+  assert.equal(Object.values(stats.byTopic).reduce((sum, t) => sum + t.correct, 0), 63);
   assert.equal(validSession({ ...s, screen: 'review' }), true);
 });
 test('última questão expirada mantém justificativa antes de abrir o resultado', () => {
   let s = createSession(now), time = now;
-  for (let i = 0; i < 149; i++) {
+  for (let i = 0; i < 189; i++) {
     time += 1; s = nextQuestion(confirmAnswer(selectAnswer(s, 0), time), time);
   }
   s = expireQuestion(s, time + LIMIT_MS);
-  assert.equal(s.screen, 'quiz'); assert.equal(s.answers.length, 150); assert.equal(s.index, 149);
-  assert.ok(quiz(s).includes(escapeHtml(questions[149].explanation)));
+  assert.equal(s.screen, 'quiz'); assert.equal(s.answers.length, 190); assert.equal(s.index, 189);
+  assert.ok(quiz(s).includes(escapeHtml(questions[189].explanation)));
   assert.match(quiz(s), /Ver resultado/);
   assert.equal(nextQuestion(s, time + LIMIT_MS + 1).screen, 'results');
 });
@@ -109,7 +109,7 @@ test('justificativas vazias, genéricas e placeholders são rejeitados', () => {
   assert.doesNotThrow(() => validateExplanation('O temporal retrai a mandíbula pelas fibras posteriores e realiza fechamento leve.', page));
 });
 
-test('as 150 questões exibem sua justificativa em acerto, erro, expiração e revisão', () => {
+test('as 190 questões exibem sua justificativa em acerto, erro, expiração e revisão', () => {
   let session = createSession(now), time = now;
   questions.forEach((q, i) => {
     for (const outcome of ['correct', 'wrong', 'timeout']) {
@@ -127,7 +127,7 @@ test('as 150 questões exibem sua justificativa em acerto, erro, expiração e r
     assert.equal(session.answers.length, i + 1);
   });
   const html = review(session);
-  assert.equal((html.match(/class="justification"/g) || []).length, 150);
+  assert.equal((html.match(/class="justification"/g) || []).length, 190);
   questions.forEach(q => assert.ok(html.includes(escapeHtml(q.explanation))));
 });
 
@@ -157,5 +157,39 @@ test('validação rejeita progresso estruturalmente adulterado', () => {
   const s = createSession(now);
   for (const patch of [{ index: 999 }, { index: 1 }, { selected: 4 }, { screen: 'results' }, { deadline: now }, { notice: 0 }, { answers: [{ id: 'q999', timedOut: false, choice: 0, elapsedMs: 0 }] }]) {
     assert.equal(validSession({ ...s, ...patch }), false);
+  }
+});
+
+test('acréscimo de exatamente 40 preserva integralmente as 150 questões originais', async () => {
+  const { createHash } = await import('node:crypto');
+  const originalHash = createHash('sha256').update(JSON.stringify(questions.slice(0, 150))).digest('hex');
+  assert.equal(originalHash, '11a66687d4df869be09908f244865a483d656a94203f1c09caa9423bf7888f24');
+  assert.equal(questions.slice(150).length, 40);
+  assert.deepEqual(questions.slice(150).map(q => q.id), Array.from({ length: 40 }, (_, i) => `q${151 + i}`));
+  assert.equal(new Set(questions.slice(150).map(q => q.difficulty)).size, 3);
+  assert.equal(new Set(questions.slice(150).map(q => q.topic)).size, 6);
+});
+
+test('sessões antigas concluídas retomam em q151 e preservam respostas no localStorage', () => {
+  let session = createSession(now);
+  for (let i = 0; i < 150; i++) {
+    session = confirmAnswer(selectAnswer(session, questions[i].answerIndex), now + i + 1);
+    if (i < 149) session = nextQuestion(session, now + i + 1);
+  }
+  for (const screen of ['quiz', 'results', 'review']) {
+    const old = { ...session, screen, selected: null };
+    let raw = JSON.stringify(old);
+    const storage = { getItem: () => raw, setItem: (_, value) => { raw = value; } };
+    const restored = readSession(storage).session;
+    assert.ok(restored);
+    assert.equal(validSession(restored), true);
+    assert.deepEqual(restored.answers, old.answers);
+    assert.equal(summary(restored).correct, 150);
+    const resumed = screen === 'quiz' ? nextQuestion(restored, now + 151) : restored;
+    assert.equal(resumed.index, 150);
+    assert.equal(resumed.screen, 'quiz');
+    assert.equal(remainingSeconds(resumed, resumed.questionStartedAt), 60);
+    assert.equal(writeSession(storage, resumed), true);
+    assert.deepEqual(readSession(storage).session, resumed);
   }
 });

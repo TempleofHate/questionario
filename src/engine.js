@@ -79,7 +79,15 @@ export function readSession(storage, key = STORAGE_KEY) {
   try {
     const raw = storage.getItem(key);
     if (!raw) return { session: null, warning: '' };
-    const value = JSON.parse(raw);
+    let value = JSON.parse(raw);
+    // Sessões concluídas no banco original retomam nas novas questões, sem perder respostas.
+    if (key === STORAGE_KEY && value && !isVisual(value) && value.index === 149
+      && value.answers?.length === 150 && ['results', 'review'].includes(value.screen)
+      && validSession({ ...value, screen: 'quiz' })) {
+      const now = Math.max(Date.now(), value.questionStartedAt);
+      value = { ...value, screen: 'quiz', index: 150, selected: null, notice: null,
+        questionStartedAt: now, deadline: now + LIMIT_MS };
+    }
     if (!validSession(value) || key !== (value.mode === 'muscle-visual' ? MUSCLE_VISUAL_STORAGE_KEY : value.mode === 'skull' ? SKULL_STORAGE_KEY : STORAGE_KEY)) return { session: null, warning: 'O progresso salvo está inválido ou é de outra versão. Inicie uma nova sessão.' };
     return { session: value, warning: '' };
   } catch {

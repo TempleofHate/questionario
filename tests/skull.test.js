@@ -51,7 +51,7 @@ test('click at deadline times out; invalid coordinates and modified saved scorin
   const a=answerPoint(s,inside(skullQuestions[0]),100001);
   assert.equal(validSession({...a,answers:[{...a.answers[0],choice:1}]}),false);
 });
-test('legacy 150-question sessions retain storage key, version, progress and scoring', () => {
+test('traditional sessions retain storage key, version, progress and scoring', () => {
   const memory = new Map();
   const storage = {getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,v),removeItem:k=>memory.delete(k)};
   let old = createSession(100000);
@@ -64,7 +64,7 @@ test('legacy 150-question sessions retain storage key, version, progress and sco
   assert.deepEqual(readSession(storage,SKULL_STORAGE_KEY).session,visual);
   writeSession(storage,null,SKULL_STORAGE_KEY);
   assert.equal(memory.get(STORAGE_KEY),serialized);
-  assert.equal(questions.length,150);
+  assert.equal(questions.length,190);
   assert.equal(summary(old).correct,1);
 });
 test('polygon boundary counts as inside, outside does not', () => {
