@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
-import { questions, groups } from '../src/data/questions.js';
+import { questions as originalQuestions, detailQuestions, groups as originalGroups, detailGroups } from '../src/data/questions.js';
 
 export const normalize = value => value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]/g, '');
 const stopWords = new Set('essa esse esta este isso isto aquela aquele alternativa resposta correta correto documento material fonte texto tabela pagina descrito descrita conforme segundo porque para pela pelo pelos pelas como entre sobre tambem mais uma suas seus nessa nesse origem insercao funcao acao nervo musculo'.split(' '));
@@ -17,6 +17,10 @@ export function validateExplanation(explanation, pageText, id = 'questão') {
   assert.ok(shared.length >= 3, `${id}: justificativa genérica ou sem conteúdo específico da página (termos encontrados: ${shared.join(', ')})`);
 }
 export async function validateQuestions() {
+  const questions = [...originalQuestions, ...detailQuestions];
+  const groups = [...originalGroups, ...detailGroups];
+  assert.equal(originalQuestions.length, 150);
+  assert.equal(detailQuestions.length, 40);
   const pages = (await readFile(new URL('../docs/musculos.txt', import.meta.url), 'utf8')).split('\f');
   assert.equal(questions.length, 190, 'O banco deve ter exatamente 190 questões');
   assert.equal(new Set(questions.map(q => q.id)).size, 190, 'IDs duplicados');
@@ -41,7 +45,8 @@ export async function validateQuestions() {
     total: questions.length,
     withExplanation: questions.filter(q => q.explanation.trim()).length,
     genericExplanations: 0,
-    topics: Object.fromEntries(groups.map(([t, rows]) => [t, rows.length])),
+    parts: { original: originalQuestions.length, details: detailQuestions.length },
+    topics: Object.fromEntries(originalGroups.map(([t, rows]) => [t, rows.length + (detailGroups.find(([topic]) => topic === t)?.[1].length || 0)])),
     difficulty: Object.fromEntries(['Fácil', 'Média', 'Difícil'].map(d => [d, questions.filter(q => q.difficulty === d).length])),
     answerPositions: [0, 1, 2, 3].map(i => questions.filter(q => q.answerIndex === i).length),
     source: '190 referências de página e evidências presentes no texto extraído. Fidelidade semântica conferida editorialmente; a checagem textual não substitui essa revisão.',

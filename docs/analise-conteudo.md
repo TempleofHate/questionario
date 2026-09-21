@@ -39,3 +39,11 @@ A presença de uma evidência é uma checagem de rastreabilidade, não uma prova
 ## Continuação: justificativas
 
 Foram mantidos todos os enunciados, alternativas, gabaritos e IDs. Oito explicações foram ampliadas (q012, q035, q059, q064, q096, q136, q137 e q141), recuperando origem, inserção ou ação expressas nas respectivas páginas. Nenhum dado anatômico externo foi acrescentado. A validação agora também rejeita placeholders, justificativas repetidas e textos sem pelo menos três termos significativos encontrados na página de referência. Essa checagem lexical complementa a leitura editorial; não demonstra sozinha a fidelidade semântica.
+
+## Revisão da parte adicional (20/09/2026)
+
+Histórico revisado: `5114f43` criou as 150 questões, `1e5b386` acrescentou o crânio visual, `ded246e` acrescentou músculos visuais e `48bc896` anexou 40 questões textuais ao banco original. A revisão separa estas últimas no modo `muscle-details` e as reformula em 40 perfis, um por músculo das tabelas, cobrindo os quatro campos em cada questão.
+
+Fonte editorial: `docs/musculos.txt`, extração do PDF local. Cobertura: 17 músculos faciais, 4 mastigatórios, 8 de língua/palato, 8 hióideos e 3 cervicais. Não foram acrescentados músculos citados apenas como relações (por exemplo, tensor do tímpano), nem preenchidas lacunas de inervação. Preservaram-se as atribuições do próprio material para digástrico, milo-hióideo, genio-hióideo, tireo-hióideo, plexo faríngeo e trapézio. Masséter e abaixador do ângulo da boca têm tabelas continuadas entre páginas.
+
+A verificação automática de evidências é textual, não uma auditoria anatômica externa. As sínteses foram cotejadas com as colunas da fonte; os distratores reutilizam perfis de outros músculos, evitando informações inventadas. As 150 originais são verificadas também por hash de conteúdo.

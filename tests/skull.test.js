@@ -64,7 +64,7 @@ test('traditional sessions retain storage key, version, progress and scoring', (
   assert.deepEqual(readSession(storage,SKULL_STORAGE_KEY).session,visual);
   writeSession(storage,null,SKULL_STORAGE_KEY);
   assert.equal(memory.get(STORAGE_KEY),serialized);
-  assert.equal(questions.length,190);
+  assert.equal(questions.length,150);
   assert.equal(summary(old).correct,1);
 });
 test('polygon boundary counts as inside, outside does not', () => {

@@ -1,4 +1,4 @@
-import { groups, PDF_URL } from './data/questions.js';
+import { groups, detailGroups, PDF_URL } from './data/questions.js';
 import { summary, isVisual, remainingSeconds, questionsFor } from './engine.js';
 import { escapeHtml as e, decimal, duration, clock } from './format.js';
 import { visualImage, visualIntro, muscleVisualIntro } from './visual.js';
@@ -7,7 +7,7 @@ const arrow = '<svg class="action-arrow" width="18" height="18" viewBox="0 0 24 
 const source = q => q.type === 'hotspot' ? `<a href="${e(q.source.url)}" target="_blank" rel="noopener">Imagem original no ${e(q.image.provider || 'Wikimedia Commons')}</a> · <a href="${q.credits || "/docs/skull-sources.html"}">Fontes e créditos</a>` : `<a href="${e(PDF_URL)}#page=${q.source.page}" target="_blank" rel="noopener">Conferir no PDF · p. ${q.source.page}<span class="sr-only"> (abre em outra aba)</span></a>`;
 export function sidebar(session, mode = 'muscles') {
   const bank = questionsFor(session || { mode });
-  const topics = mode === 'muscle-visual' ? [['Anatomia visual muscular', bank]] : mode === 'skull' ? [['Anatomia visual do crânio', bank]] : groups;
+  const topics = mode === 'muscle-details' ? detailGroups : mode === 'muscle-visual' ? [['Anatomia visual muscular', bank]] : mode === 'skull' ? [['Anatomia visual do crânio', bank]] : groups;
   const stats = session ? summary(session) : null;
   return `<aside class="sidebar" aria-label="Assuntos do quiz"><h2>${session ? 'Sua sessão' : 'Roteiro de estudo'}</h2>
     <ol class="topic-list">${topics.map(([topic, rows]) => {
@@ -19,11 +19,11 @@ export function sidebar(session, mode = 'muscles') {
 export function intro(mode = 'muscles') {
   if (mode === 'muscle-visual') return muscleVisualIntro();
   if (mode === 'skull') return visualIntro();
-  return `<section class="intro"><h1 id="screen-title" tabindex="-1">Conheça os músculos.<br>Entenda as relações.</h1>
-    <p class="lead">Uma sessão de estudo sobre os músculos da cabeça e do pescoço, do primeiro conceito às relações entre origem, inserção, ação e inervação.</p>
-    <dl class="intro-facts"><div><dt>Questões</dt><dd>190</dd></div><div><dt>Por questão</dt><dd>60 segundos</dd></div><div><dt>Fonte</dt><dd>7 páginas de estudo</dd></div></dl>
+  return `<section class="intro"><h1 id="screen-title" tabindex="-1">${mode === 'muscle-details' ? 'Estude cada músculo.<br>Relacione os quatro aspectos.' : 'Conheça os músculos.<br>Entenda as relações.'}</h1>
+    <p class="lead">${mode === 'muscle-details' ? 'Uma questão por músculo do PDF, reunindo origem, inserção, função e inervação. Escolha a associação correta dos quatro aspectos. Quando a fonte não informa a inervação, essa ausência é indicada.' : 'Uma sessão de estudo sobre os músculos da cabeça e do pescoço, do primeiro conceito às relações entre origem, inserção, ação e inervação.'}</p>
+    <dl class="intro-facts"><div><dt>Questões</dt><dd>${questionsFor({ mode }).length}</dd></div><div><dt>Por questão</dt><dd>60 segundos</dd></div><div><dt>Fonte</dt><dd>7 páginas de estudo</dd></div></dl>
     <h2>Como funciona</h2><ol class="instructions"><li>Escolha uma das quatro alternativas e confirme.</li><li>Leia a justificativa e avance no seu ritmo.</li><li>Se o minuto terminar, a questão fica como não respondida e conta como erro. Leia o gabarito e a justificativa antes de avançar.</li></ol>
-    <p class="muted">Seu progresso é salvo neste navegador. O cronômetro da questão em andamento continua se você sair ou atualizar a página.</p>
+    <p class="muted">Cada parte tem progresso próprio, salvo neste navegador. O cronômetro da questão em andamento continua se você sair ou atualizar a página.</p>
     <div class="actions"><button class="primary" data-action="start">Iniciar quiz ${arrow}</button><a href="${e(PDF_URL)}" target="_blank" rel="noopener">Ler material de estudo<span class="sr-only"> (abre em outra aba)</span></a></div>
     <p class="fineprint">Ao final, veja sua nota, o desempenho por assunto e revise todas as respostas. As questões seguem as informações do material fornecido.</p></section>`;
 }

@@ -12,7 +12,7 @@ HTML, CSS e JavaScript modular, sem dependências de execução. Recomendação 
 Pessoas estudando o conteúdo do PDF fornecido. Contexto acadêmico; curso e instituição não informados.
 
 ## Product Purpose
-Praticar e revisar exatamente 150 questões fundamentadas exclusivamente no documento local.
+Praticar e revisar 150 questões originais e uma parte independente de 40 questões, uma por músculo, relacionando origem, inserção, função e inervação exclusivamente do documento local. Os modos visuais de ossos e músculos têm 70 questões cada, com suas fontes próprias.
 
 ## Capabilities and Constraints
 Quatro alternativas e uma resposta correta por questão, justificativa individual explícita em acerto, erro, esgotamento e revisão, 60 segundos por questão, bloqueio no esgotamento com gabarito e justificativa até avanço manual, resultados por assunto, revisão completa, reinício e persistência local. Responsivo em celular, tablet e computador. Sem conteúdo anatômico externo.

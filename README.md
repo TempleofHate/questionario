@@ -1,6 +1,6 @@
 # Músculos em estudo
 
-Aplicação web de quiz em português, com **exatamente 150 questões**, baseada exclusivamente no PDF presente em `docs/`.
+Aplicação web de quiz em português, com **150 questões originais e uma parte independente de 40 questões por músculo**, baseada exclusivamente no PDF presente em `docs/`.
 
 ## Executar
 
@@ -82,3 +82,13 @@ Nos arquivos editoriais cada linha é `[página, dificuldade, evidência, enunci
 ## Continuação: justificativas e expiração
 
 O banco e os gabaritos foram preservados. O campo `explanation` é a justificativa individual. Oito justificativas foram ampliadas com informações do PDF. A seleção exige confirmação, e acertos, erros e esgotamentos mantêm feedback até avanço manual. A versão e a chave do armazenamento foram mantidas, pois IDs, ordem e gabaritos não mudaram. Sessões antigas continuam restauráveis.
+
+## Músculos por completo
+
+A aba **Músculos por completo · 40 questões** (`#musculos-detalhados`) tem uma questão para cada um dos 40 músculos das tabelas do PDF. Todas relacionam **origem, inserção, função e inervação**, com quatro alternativas, justificativa e referência à página. Distribuição: face (17), mastigação (4), língua e palato (8), hióide e deglutição (8) e pescoço (3).
+
+As sínteses seguem exclusivamente o documento, inclusive os campos de inervação não informados do risório e do abaixador do septo nasal. As alternativas incorretas apresentam perfis de outros músculos já descritos na fonte. As linhas do masséter e do abaixador do ângulo da boca continuam na página seguinte, indicada na justificativa.
+
+Cada uma das quatro partes tem sessão, nota, revisão e reinício independentes. As 150 questões originais mantêm IDs, ordem, alternativas e gabaritos. O progresso do antigo banco misto de 190 preserva as respostas das primeiras 150; as 40 reformuladas começam em uma sessão própria, pois seu conteúdo mudou. Sessões de 150 já concluídas permanecem concluídas.
+
+`tests/details.test.js` cobre separação, integridade do banco original, migração, pontuação e persistência. `tests/details-browser.js` percorre as 40 questões, verifica troca de partes, recarga, revisão e responsividade.

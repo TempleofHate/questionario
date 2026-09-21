@@ -20,11 +20,11 @@ export function visualIntro() {
     <p class="lead">70 questões com fotografias de peças anatômicas reais. Identifique ossos, suturas, forames, processos e cavidades diretamente na imagem.</p>
     <dl class="intro-facts"><div><dt>Questões visuais</dt><dd>70</dd></div><div><dt>Por questão</dt><dd>60 segundos</dd></div><div><dt>Fotografias</dt><dd>11 vistas e detalhes</dd></div></dl>
     <h2>Como funciona</h2><ol class="instructions"><li>Clique ou toque na estrutura pedida. O primeiro clique registra a resposta.</li><li>Amplie a imagem para localizar detalhes pequenos.</li><li>Veja a região correta e leia a justificativa, mesmo ao errar ou quando o tempo terminar.</li><li>Avance no seu ritmo. Ao final, revise as 70 questões e suas respostas.</li></ol>
-    <p class="muted">Este modo tem progresso próprio, salvo neste navegador. A sessão das 190 questões de músculos é preservada. O cronômetro continua se você sair ou atualizar a página.</p>
+    <p class="muted">Este modo tem progresso próprio, salvo neste navegador. A sessão das 150 questões de músculos é preservada. O cronômetro continua se você sair ou atualizar a página.</p>
     <div class="actions"><button class="primary" data-action="start">Iniciar quiz visual</button><a href="/docs/skull-sources.html">Fontes e créditos das imagens</a></div></section>`;
 }
 export function modeNav(mode) {
-  return `<nav class="mode-nav" aria-label="Modo de estudo"><button class="text-button" data-action="mode" data-mode="muscles" ${mode === 'muscles' ? 'aria-current="page"' : ''}>Músculos · 190 questões</button><button class="text-button" data-action="mode" data-mode="skull" ${mode === 'skull' ? 'aria-current="page"' : ''}>Crânio visual · 70 questões</button><button class="text-button" data-action="mode" data-mode="muscle-visual" ${mode === 'muscle-visual' ? 'aria-current="page"' : ''}>Músculos visuais · 70 questões</button></nav>`;
+  return `<nav class="mode-nav" aria-label="Modo de estudo"><button class="text-button" data-action="mode" data-mode="muscles" ${mode === 'muscles' ? 'aria-current="page"' : ''}>Músculos · 150 questões</button><button class="text-button" data-action="mode" data-mode="muscle-details" ${mode === 'muscle-details' ? 'aria-current="page"' : ''}>Músculos por completo · 40 questões</button><button class="text-button" data-action="mode" data-mode="skull" ${mode === 'skull' ? 'aria-current="page"' : ''}>Crânio visual · 70 questões</button><button class="text-button" data-action="mode" data-mode="muscle-visual" ${mode === 'muscle-visual' ? 'aria-current="page"' : ''}>Músculos visuais · 70 questões</button></nav>`;
 }
 
 export function muscleVisualIntro() {
