@@ -1,5 +1,6 @@
+import { CRANIOMETRIA_PDF_URL } from './data/craniometria.js';
 import { PDF_URL } from './data/questions.js';
-import { createSession, isVisual, SKULL_THEORY_STORAGE_KEY, MUSCLE_VISUAL_STORAGE_KEY, DETAIL_STORAGE_KEY, STORAGE_KEY, SKULL_STORAGE_KEY, questionsFor, answerPoint, readSession, writeSession, selectAnswer, confirmAnswer, nextQuestion, expireQuestion, remainingSeconds } from './engine.js';
+import { createSession, isVisual, CRANIOMETRIA_STORAGE_KEY, SKULL_THEORY_STORAGE_KEY, MUSCLE_VISUAL_STORAGE_KEY, DETAIL_STORAGE_KEY, STORAGE_KEY, SKULL_STORAGE_KEY, questionsFor, answerPoint, readSession, writeSession, selectAnswer, confirmAnswer, nextQuestion, expireQuestion, remainingSeconds } from './engine.js';
 import { intro, sidebar, quiz, results, review } from './views.js';
 import { modeNav } from './visual.js';
 import { clock } from './format.js';
@@ -10,8 +11,8 @@ const announcer = document.querySelector('#announcer');
 const dialog = document.querySelector('#reset-dialog');
 let storage;
 try { storage = window.localStorage; } catch { storage = null; }
-let mode = location.hash === '#cranio-teorico' ? 'skull-theory' : location.hash === '#musculos-detalhados' ? 'muscle-details' : location.hash === '#musculos-visuais' ? 'muscle-visual' : location.hash === '#cranio' ? 'skull' : 'muscles';
-const storageKey = () => mode === 'skull-theory' ? SKULL_THEORY_STORAGE_KEY : mode === 'muscle-details' ? DETAIL_STORAGE_KEY : mode === 'muscle-visual' ? MUSCLE_VISUAL_STORAGE_KEY : mode === 'skull' ? SKULL_STORAGE_KEY : STORAGE_KEY;
+let mode = location.hash === '#craniometria' ? 'craniometria' : location.hash === '#cranio-teorico' ? 'skull-theory' : location.hash === '#musculos-detalhados' ? 'muscle-details' : location.hash === '#musculos-visuais' ? 'muscle-visual' : location.hash === '#cranio' ? 'skull' : 'muscles';
+const storageKey = () => mode === 'craniometria' ? CRANIOMETRIA_STORAGE_KEY : mode === 'skull-theory' ? SKULL_THEORY_STORAGE_KEY : mode === 'muscle-details' ? DETAIL_STORAGE_KEY : mode === 'muscle-visual' ? MUSCLE_VISUAL_STORAGE_KEY : mode === 'skull' ? SKULL_STORAGE_KEY : STORAGE_KEY;
 const restored = readSession(storage, storageKey());
 let session = restored.session;
 let reviewFilter = 'all';
@@ -26,6 +27,7 @@ function persist() {
 }
 function announce(message) { announcer.textContent = message; }
 function render(focus = true) {
+  document.querySelector('#pdf-link').href = mode === 'craniometria' ? CRANIOMETRIA_PDF_URL : PDF_URL;
   const content = !session ? intro(mode) : session.screen === 'quiz' ? quiz(session) : session.screen === 'results' ? results(session) : review(session, reviewFilter);
   app.innerHTML = `${sidebar(session, mode)}<main id="main" class="${isVisual({ mode }) ? 'skull-mode' : ''}">${modeNav(mode)}${content}</main>`;
   document.title = session?.screen === 'quiz' ? `Questão ${session.index + 1} de ${questionsFor(session).length} — Músculos em estudo` : 'Músculos em estudo — Quiz de cabeça e pescoço';
@@ -134,16 +136,16 @@ window.addEventListener('storage', event => {
   announce('Progresso atualizado a partir de outra aba.');
 });
 function switchMode(nextMode) {
-  if (!['skull', 'muscles', 'muscle-visual', 'muscle-details', 'skull-theory'].includes(nextMode) || nextMode === mode) return;
+  if (!['skull', 'muscles', 'muscle-visual', 'muscle-details', 'skull-theory', 'craniometria'].includes(nextMode) || nextMode === mode) return;
   persist();
   mode = nextMode;
-  history.replaceState(null, '', mode === 'skull-theory' ? '#cranio-teorico' : mode === 'muscle-details' ? '#musculos-detalhados' : mode === 'muscle-visual' ? '#musculos-visuais' : mode === 'skull' ? '#cranio' : location.pathname + location.search);
+  history.replaceState(null, '', mode === 'craniometria' ? '#craniometria' : mode === 'skull-theory' ? '#cranio-teorico' : mode === 'muscle-details' ? '#musculos-detalhados' : mode === 'muscle-visual' ? '#musculos-visuais' : mode === 'skull' ? '#cranio' : location.pathname + location.search);
   const restoredMode = readSession(storage, storageKey());
   session = restoredMode.session;
   if (restoredMode.warning) showWarning(restoredMode.warning);
   lastAnnounced = ''; render(); tick();
 }
-window.addEventListener('hashchange', () => switchMode(location.hash === '#cranio-teorico' ? 'skull-theory' : location.hash === '#musculos-detalhados' ? 'muscle-details' : location.hash === '#musculos-visuais' ? 'muscle-visual' : location.hash === '#cranio' ? 'skull' : 'muscles'));
+window.addEventListener('hashchange', () => switchMode(location.hash === '#craniometria' ? 'craniometria' : location.hash === '#cranio-teorico' ? 'skull-theory' : location.hash === '#musculos-detalhados' ? 'muscle-details' : location.hash === '#musculos-visuais' ? 'muscle-visual' : location.hash === '#cranio' ? 'skull' : 'muscles'));
 app.addEventListener('keydown', event => {
   const surface = event.target.closest('[data-hotspot]');
   if (!surface) return;
